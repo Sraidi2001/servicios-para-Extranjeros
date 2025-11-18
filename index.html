@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>باقة الوافدين</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <img src="./IMAGE/png7.png" alt="شعار">
+        <h1>باقة الوافدين 🇪🇸</h1>
+        <p class="subtitle">خدمات مخصصة لكل من يحتاج مساعدة في إسبانيا</p>
+    </div>
+
+    <!-- Paso 1: Papeles / Sin Papeles -->
+    <div id="statusCards">
+        <div class="card" data-status="papeles">
+            <span class="icon">📄</span> مع وثائق
+        </div>
+        <div class="card" data-status="sinpapeles">
+            <span class="icon">🚫</span> بدون وثائق
+        </div>
+    </div>
+
+    <!-- Paso 2: Sub-opciones si Papeles -->
+    <div id="papelesOptions" class="hidden">
+        <label>اختر نوع وضعك:</label>
+        <select id="papelesType">
+            <option value="">-- اختر --</option>
+            <option value="estudiante">طالب</option>
+            <option value="residente">مقيم</option>
+            <option value="turista">سائح</option>
+        </select>
+    </div>
+
+    <!-- Paso 3: Lista de Servicios -->
+    <div id="servicesDiv" class="hidden">
+        <label>اختر الخدمات المطلوبة:</label>
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+            <div class="service-card">
+                <input type="checkbox" id="serv_cuenta" value="Cuenta bancaria">
+                <label for="serv_cuenta">فتح حساب بنكي</label>
+            </div>
+            <div class="service-card">
+                <input type="checkbox" id="serv_trabajo" value="Trabajo">
+                <label for="serv_trabajo">البحث عن عمل</label>
+            </div>
+            <div class="service-card">
+                <input type="checkbox" id="serv_alquiler" value="Alquiler">
+                <label for="serv_alquiler">البحث عن سكن</label>
+            </div>
+            <div class="service-card">
+                <input type="checkbox" id="serv_empadronamiento" value="Empadronamiento">
+                <label for="serv_empadronamiento">التسجيل في البلدية</label>
+            </div>
+            <div class="service-card">
+                <input type="checkbox" id="serv_cv" value="CV">
+                <label for="serv_cv">كتابة السيرة الذاتية</label>
+            </div>
+            <div class="service-card">
+                <input type="checkbox" id="serv_otros" value="Otros">
+                <label for="serv_otros">خدمات أخرى</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Paso 4: Número de WhatsApp -->
+    <div id="whatsappDiv" class="hidden">
+        <label>كود الدولة:</label>
+        <select id="countryCode">
+            <option value="+34">إسبانيا (+34)</option>
+            <option value="+212">المغرب (+212)</option>
+            <option value="+33">فرنسا (+33)</option>
+            <option value="+1">الولايات المتحدة (+1)</option>
+        </select>
+
+        <label>رقم واتساب:</label>
+        <input type="text" id="phone" placeholder="700435618" pattern="\d{9}" title="يجب أن يكون 9 أرقام">
+
+        <button id="sendBtn">إرسال الطلب</button>
+        <button id="resetBtn" class="reset-btn">إعادة تعيين</button>
+    </div>
+
+    <!-- Mensaje de éxito -->
+    <div id="thankMessage" class="thank-message hidden">
+        <p>✅ تم إرسال طلبك بنجاح! سنرد عليك قريبًا عبر واتساب.</p>
+        <p>يمكنك إرسال طلب آخر إذا كنت بحاجة لخدمات إضافية.</p>
+    </div>
+</div>
+
+<script>
+    const statusCards = document.querySelectorAll('.card');
+    const papelesOptions = document.getElementById('papelesOptions');
+    const servicesDiv = document.getElementById('servicesDiv');
+    const whatsappDiv = document.getElementById('whatsappDiv');
+    const sendBtn = document.getElementById('sendBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const thankMessage = document.getElementById('thankMessage');
+    let selectedStatus = "";
+
+    // ✅ تهيئة حالة المستخدم (إذا كان قد أرسل من قبل)
+    const savedData = localStorage.getItem('extranjerosUser');
+    if(savedData) {
+        const user = JSON.parse(savedData);
+        if(user.phone && user.countryCode) {
+            document.getElementById('phone').value = user.phone;
+            document.getElementById('countryCode').value = user.countryCode;
+        }
+    }
+
+    statusCards.forEach(card => {
+        card.addEventListener('click', function() {
+            selectedStatus = this.getAttribute('data-status');
+            if(selectedStatus === "papeles") {
+                papelesOptions.classList.remove('hidden');
+                servicesDiv.classList.add('hidden');
+                whatsappDiv.classList.add('hidden');
+                sendBtn.classList.add('hidden');
+            } else {
+                papelesOptions.classList.add('hidden');
+                servicesDiv.classList.remove('hidden');
+                whatsappDiv.classList.remove('hidden');
+                sendBtn.classList.remove('hidden');
+            }
+        });
+    });
+
+    document.getElementById('papelesType').addEventListener('change', function() {
+        if(this.value !== "") {
+            servicesDiv.classList.remove('hidden');
+            whatsappDiv.classList.remove('hidden');
+            sendBtn.classList.remove('hidden');
+            selectedStatus = this.value;
+        } else {
+            servicesDiv.classList.add('hidden');
+            whatsappDiv.classList.add('hidden');
+            sendBtn.classList.add('hidden');
+        }
+    });
+
+    sendBtn.addEventListener('click', function() {
+        const countryCode = document.getElementById('countryCode').value;
+        const phone = document.getElementById('phone').value.trim();
+
+        // ✅ التحقق من صحة الرقم
+        if(phone === "") {
+            alert("يرجى إدخال رقم واتساب");
+            return;
+        }
+        if(!/^\d{9}$/.test(phone)) {
+            alert("يجب أن يكون الرقم مكونًا من 9 أرقام (بدون كود الدولة)");
+            return;
+        }
+
+        // ✅ جمع الخدمات المختارة
+        const servicesCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+        const selectedServices = Array.from(servicesCheckboxes).map(cb => cb.value).join(", ");
+
+        if(selectedServices === "") {
+            alert("يرجى اختيار خدمة واحدة على الأقل");
+            return;
+        }
+
+        // ✅ حفظ بيانات المستخدم في localStorage (للعودة لاحقًا)
+        localStorage.setItem('extranjerosUser', JSON.stringify({
+            phone: phone,
+            countryCode: countryCode
+        }));
+
+        // ✅ إرسال البيانات إلى Google Sheets
+        const webAppUrl = "https://script.google.com/macros/s/AKfycbxSGgcvGwTxNEBjTEA6sZK3ZrlRmNv84_8rfTlExXcn4GJJ4Goa7nGeA32ubpr-BLLuDg/exec"; // ← استبدل هذا!
+        const formData = new FormData();
+        formData.append('status', selectedStatus);
+        formData.append('services', selectedServices);
+        formData.append('phone', phone);
+        formData.append('countryCode', countryCode);
+
+        fetch(webAppUrl, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.result === "success") {
+                thankMessage.classList.remove('hidden');
+                
+                // ✅ فتح واتساب
+                const yourNumber = "212700435618"; // ← استبدل برقمك الحقيقي
+                const whatsappURL = `https://wa.me/${yourNumber}?text=${encodeURIComponent(
+                    `طلب جديد:\nالحالة: ${selectedStatus}\nالخدمات: ${selectedServices}\nالرقم: ${countryCode}${phone}`
+                )}`;
+                window.open(whatsappURL, "_blank");
+            } else {
+                alert("حدث خطأ أثناء حفظ طلبك. يرجى المحاولة لاحقًا.");
+            }
+        })
+        .catch(error => {
+            alert("خطأ في الاتصال. يرجى التحقق من الإنترنت.");
+            console.error(error);
+        });
+    });
+
+    resetBtn.addEventListener('click', function() {
+        // ✅ إعادة تعيين كل شيء
+        document.getElementById('papelesType').value = "";
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+        document.getElementById('phone').value = "";
+        document.getElementById('countryCode').value = "+34";
+        
+        papelesOptions.classList.add('hidden');
+        servicesDiv.classList.add('hidden');
+        whatsappDiv.classList.add('hidden');
+        sendBtn.classList.add('hidden');
+        thankMessage.classList.add('hidden');
+        
+        selectedStatus = "";
+    });
+</script>
+</body>
+</html>
