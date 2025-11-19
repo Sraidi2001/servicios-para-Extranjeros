@@ -77,7 +77,7 @@
         </select>
 
         <label>رقم واتساب:</label>
-        <input type="text" id="phone" placeholder="700435618" pattern="\d{9}" title="يجب أن يكون 9 أرقام">
+        <input type="text" id="phone" placeholder="612345678" pattern="\d{9}" title="يجب أن يكون 9 أرقام">
 
         <button id="sendBtn">إرسال الطلب</button>
         <button id="resetBtn" class="reset-btn">إعادة تعيين</button>
@@ -86,6 +86,8 @@
     <!-- Mensaje de éxito -->
     <div id="thankMessage" class="thank-message hidden">
         <p>✅ تم إرسال طلبك بنجاح! سنرد عليك قريبًا عبر واتساب.</p>
+        <p>هل ترغب في معرفة <a href="http://inspiring-frangipane-552637.netlify.app" target="_blank">الخدمات المقدمة؟</a></p>
+        <p>بعد الانتهاء من الخدمة، نود أن نعرف رأيك: <a href="https://docs.google.com/forms/d/e/1FAIpQLSeEiutpdH4GgxXIVcktMl54Ma2ZQ9OJ9FfPoQU8FS5s0VbAYA/viewform?usp=header" target="_blank">قيم الخدمة</a></p>
         <p>يمكنك إرسال طلب آخر إذا كنت بحاجة لخدمات إضافية.</p>
     </div>
 </div>
@@ -170,7 +172,7 @@
         }));
 
         // ✅ إرسال البيانات إلى Google Sheets
-        const webAppUrl = "https://script.google.com/macros/s/AKfycbxSGgcvGwTxNEBjTEA6sZK3ZrlRmNv84_8rfTlExXcn4GJJ4Goa7nGeA32ubpr-BLLuDg/exec"; // ← استبدل هذا!
+        const webAppUrl = "https://script.google.com/macros/s/AKfycbzQGau8_wvozERMRHfRQw0HMwPs0u9Bfur25a2ZShkMuZu-IlAX0VKkxCU-j_S1Sx-bCw/exec"; // ← استبدل هذا!
         const formData = new FormData();
         formData.append('status', selectedStatus);
         formData.append('services', selectedServices);
@@ -188,8 +190,8 @@
                 
                 // ✅ فتح واتساب
                 const yourNumber = "212700435618"; // ← استبدل برقمك الحقيقي
-                const whatsappURL = `https://wa.me/${yourNumber}?text=${encodeURIComponent(
-                    `طلب جديد:\nالحالة: ${selectedStatus}\nالخدمات: ${selectedServices}\nالرقم: ${countryCode}${phone}`
+                const whatsappURL = `https://wa.me/212700435618?text=${encodeURIComponent(
+                    `طلب جديد:\nالحالة: ${selectedStatus}\nالخدمات: ${selectedServices}\nالرقم: ${countryCode}${phone}\n\n🌟 بعد الانتهاء من الخدمة، نود أن نعرف رأيك: https://docs.google.com/forms/d/e/1FAIpQLSeEiutpdH4GgxXIVcktMl54Ma2ZQ9OJ9FfPoQU8FS5s0VbAYA/viewform?usp=header`
                 )}`;
                 window.open(whatsappURL, "_blank");
             } else {
@@ -219,5 +221,4 @@
     });
 </script>
 </body>
-
 </html>
